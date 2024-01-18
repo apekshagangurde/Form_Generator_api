@@ -14,26 +14,35 @@ client = pymongo.MongoClient(url)
 db = client['FormGenerator']  # Replace 'your_database_name' with the actual name of your MongoDB database
 
 # Endpoint to retrieve forms from the forms collection
+from django.http import Http404
+
 @api_view(['GET'])
-def get_forms(request):
+def get_forms(request, form_id):
     # Assuming 'forms' is the collection for form information
     forms_collection = db['forms']
 
-    # Retrieve all forms from the collection
-    forms = list(forms_collection.find())
+    # Convert the form_id to ObjectId if needed (assuming you're using MongoDB ObjectId)
+    from bson import ObjectId
+    form_id_object = ObjectId(form_id)
 
-    # Format the forms data as needed
-    formatted_forms = [
-        {
-            'form_id': str(form['_id']),
-            'form_title': form['form_title'],
-            'questions': form['components'],
-            # Add more form details as needed
-        }
-        for form in forms
-    ]
+    # Retrieve the specified form from the collection based on form_id
+    form = forms_collection.find_one({'_id': form_id_object})
 
-    return Response(formatted_forms)
+    # Check if the form with the given ID exists
+    if not form:
+        raise Http404("Form does not exist")
+
+    # Format the form data as needed
+    formatted_form = {
+        'form_id': str(form['_id']),
+        'form_title': form['form_title'],
+        'questions': form['components'],
+        # Add more form details as needed
+    }
+
+    return Response(formatted_form)
+
+
 
 # Endpoint to retrieve responses from the responses collection
 @api_view(['GET'])
