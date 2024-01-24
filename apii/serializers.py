@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .serializers import User, Form, Response
+from base.models import User, Form, Response
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
