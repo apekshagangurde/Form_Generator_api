@@ -52,7 +52,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+}
 
 
 ROOT_URLCONF = 'mansi.urls'
@@ -138,7 +145,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", 
     "http://localhost:3001",
-    "http://localhost:3002",# Add the origin of your React app
+    "http://localhost:3002",
+    "http://localhost:3003",# Add the origin of your React app
 ]
 
 CORS_ALLOW_METHODS = [

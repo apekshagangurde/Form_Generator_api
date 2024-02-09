@@ -116,15 +116,29 @@ def edit_form(request, form_id):
             form['form_title'] = form_data['form_title']
 
         if 'questions' in form_data:
-            form['components'] = form_data['questions']
+            # Update existing questions and append new questions
+            updated_questions = form_data.get('questions', [])  # Get updated questions or default to empty list
+            existing_questions = form.get('components', [])     # Get existing questions or default to empty list
 
-        # Use update_one with $set to update specific fields
-        forms_collection.update_one(
-            {'_id': ObjectId(form_id)},
-            {'$set': {'form_title': form_data.get('form_title', form['form_title']),
-                      'components': form_data.get('questions', form['components'])}
-            }
-        )
+            # Append new questions to the existing ones
+            for question in updated_questions:
+                if question not in existing_questions:
+                    existing_questions.append(question)
+
+            # Update the form with the updated questions
+            forms_collection.update_one(
+                {'_id': ObjectId(form_id)},
+                {'$set': {'form_title': form_data.get('form_title', form['form_title']),
+                          'components': existing_questions}
+                }
+            )
+
+        else:
+            # Use update_one with $set to update specific fields
+            forms_collection.update_one(
+                {'_id': ObjectId(form_id)},
+                {'$set': {'form_title': form_data.get('form_title', form['form_title'])}}
+            )
 
         return Response({'message': 'Form updated successfully'})
 
